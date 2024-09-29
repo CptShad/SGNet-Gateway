@@ -1,0 +1,12 @@
+{
+    "name": "sgnet-gateway",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "start": "bun run server.js"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "elysia": "^1.1.16"
+    }
+}
