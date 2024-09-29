@@ -1,5 +1,7 @@
 const Redis = require('ioredis');
+const dotenv = require('dotenv');
 
+dotenv.config({ path: `${__dirname}/.env` });
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 let redisClient;
 
@@ -88,11 +90,7 @@ const getResult = async (taskId, timeout) => {
                     // Clear the timeout since we received the message
                     clearTimeout(timeoutId);
 
-                    // Unsubscribe from the channel after receiving the message
-                    await subscriber.unsubscribe(`result:${taskId}`);
-
-                    // Quit the Redis client
-                    await subscriber.quit();
+                    closeSubscriber(taskId, subscriber);
 
                     // Resolve the promise with the received result
                     resolve(result);
@@ -108,11 +106,30 @@ const getResult = async (taskId, timeout) => {
 
 const subscribeToResults = async (taskId, callback) => {
     const subscriber = new Redis(REDIS_URL);
-    await subscriber.subscribe(`result:${taskId}`);
+
+    // Subscribe to the result channel for the specific taskId
+    subscriber.subscribe(`result:${taskId}`, (err, count) => {
+        if (err) {
+            console.error('[Redis] Subscription error:', err);
+            reject(err);
+        }
+    });
+
+    // Listen for messages on the channel
     subscriber.on('message', (channel, message) => {
+        // // Unsubscribe and quit from the channel after receiving the message
+        if (message === 'END_OF_STREAM') closeSubscriber(taskId, subscriber);
+
+        // Send stream messages to the callback
         callback(JSON.parse(message));
     });
-}
+};
+
+const closeSubscriber = async (taskId, subscriber) => {
+    console.log(`Closing redis subscriber for taskId ${taskId}`);
+    await subscriber.unsubscribe(`result:${taskId}`);
+    await subscriber.quit();
+};
 
 module.exports = {
     initRedis: initRedis,

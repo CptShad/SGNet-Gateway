@@ -4,7 +4,7 @@ import { initRedis } from './modules/redis.js';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
-dotenv.config();
+dotenv.config({ path: `${__dirname}/.env` });
 
 const PORT = process.env.PORT || 3000;
 
