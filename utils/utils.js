@@ -1,5 +1,11 @@
 const { subscribeToResults } = require('../modules/redis.js');
+const { logger } = require("./logger.js");
 
+/**
+ * Generate stream reader for redis results
+ * @param {*} params 
+ * @returns {ReadableStream} stream reader
+ */
 const generateStreamReader = async (params) => {
     const { taskId } = params;
     // Set up SSE stream
@@ -8,19 +14,19 @@ const generateStreamReader = async (params) => {
         async start(controller) {
             await subscribeToResults(taskId, (message) => {
                 if (message === 'END_OF_STREAM') {
-                    console.log(`Stream end for task with taskId ${taskId} and response length ${streamLength}`);
+                    logger.log(`Stream end for task with taskId ${taskId} and response length ${streamLength}`);
                     controller.close();
                 }
                 else {
                     // Add to response stream
                     streamLength++;
-                    console.log(`Stream response ${streamLength} for task with taskId ${taskId}`);
+                    logger.log(`Stream response ${streamLength} for task with taskId ${taskId}`);
                     controller.enqueue(`data: ${JSON.stringify(message)}\n\n`);
                 }
             });
         }
     });
-    console.log(`Successfully created redis stream reader for task id ${taskId}`);
+    logger.log(`Successfully created redis stream reader for task id ${taskId}`);
     return stream;
 };
 

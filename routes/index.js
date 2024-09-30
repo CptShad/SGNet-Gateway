@@ -4,6 +4,10 @@
 import fs from 'fs';
 import path from 'path';
 
+/**
+ * Dynamically loads routes present in /routes folder
+ * @param {*} app 
+ */
 export async function loadRoutes(app) {
     const routeFiles = fs.readdirSync(__dirname).filter(file => file !== 'index.js' && file.endsWith('.js'));
 
