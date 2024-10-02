@@ -1,4 +1,4 @@
-const { v4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const { enqueueTask, getResult } = require('../modules/redis.js');
 const { generateStreamReader } = require('../utils/utils.js');
 const { logger } = require("../utils/logger.js");
@@ -15,20 +15,20 @@ const { logger } = require("../utils/logger.js");
  */
 const generateResponse = async ({ body, set }) => {
     const { provider, model, prompt, stream } = body;
-    const taskId = v4();
-    
+    const taskId = randomUUID();
+
     try {
         logger.log(`Received req in generateResponse for provider ${provider} model ${model} prompt ${JSON.stringify(prompt).slice(0, 500)}`
             + ` stream ${stream ? true : false} and taskId ${taskId}`);
 
         // Enqueue task
         const type = "generate";
-        await enqueueTask({ taskId, type, ...body }); 
+        await enqueueTask({ taskId, type, ...body });
         logger.log(`Enqueued generate task with taskId ${taskId}`);
 
         if (stream) {
             // If it is a stream call, Return a streaming response
-            const streamReader = await generateStreamReader({ taskId });    
+            const streamReader = await generateStreamReader({ taskId });
             return new Response(streamReader, {
                 headers: {
                     'Content-Type': 'text/event-stream',
@@ -45,9 +45,9 @@ const generateResponse = async ({ body, set }) => {
             if (result) {
                 try {
                     const jsonResult = JSON.parse(result);
-                    return jsonResult;       
+                    return jsonResult;
                 }
-                catch(err) {
+                catch (err) {
                     return result;
                 }
             }
@@ -78,7 +78,7 @@ const generateResponse = async ({ body, set }) => {
 const chatResponse = async ({ body, set }) => {
     const { provider, model, prompt, messages, stream } = body;
     const taskId = v4();
-    
+
     try {
         logger.log(`Received req in chatResponse for provider ${provider} model ${model} prompt ${prompt ? JSON.stringify(prompt).slice(0, 500) : ""}`
             + ` messages lengths ${messages?.length} stream ${stream || false} and taskId ${taskId}`);
@@ -109,7 +109,7 @@ const chatResponse = async ({ body, set }) => {
                     const jsonResult = JSON.parse(result);
                     return jsonResult;
                 }
-                catch(err) {
+                catch (err) {
                     return result;
                 }
             }

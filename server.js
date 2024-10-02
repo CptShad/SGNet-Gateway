@@ -19,14 +19,15 @@ const app = new Elysia();
 
         // Dynamically load routes
         await loadRoutes(app);
+        logger.info("All routes loaded.");
 
         // Start the Elysia server
         app.listen(PORT, () => {
             logger.log(`Server is running on http://localhost:${PORT}`);
         });
 
-    } 
-	catch (error) {
+    }
+    catch (error) {
         logger.error('Failed to start server:', error);
         process.exit(1); // Exit if server fails to start
     }
