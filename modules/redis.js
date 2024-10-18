@@ -2,8 +2,8 @@ const Redis = require('ioredis');
 const dotenv = require('dotenv');
 const { logger } = require("../utils/logger.js");
 
-dotenv.config({ path: `${__dirname}/.env` });
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+dotenv.config({ path: `${__dirname}/../.env` });
+const REDIS_IP = process.env.REDIS_IP || 'localhost:6379';
 
 /**
  * @type {Redis.Redis}
@@ -17,7 +17,11 @@ let redisClient;
 const initRedis = async () => {
     return new Promise((resolve, reject) => {
         try {
-            redisClient = new Redis(REDIS_URL);
+            redisClient = createNewConnection();
+
+            redisClient.on('connect', () => {
+                logger.info('[Redis] Connecting...');
+            });
 
             // Listen for Redis connection events
             redisClient.on('ready', () => {
@@ -89,7 +93,7 @@ const getResult = async (taskId, timeout) => {
     /**
      * @type {Redis.Redis}
      */
-    const subscriber = new Redis(REDIS_URL);
+    const subscriber = createNewConnection();
 
     return new Promise((resolve, reject) => {
         const startTime = Date.now();
@@ -98,7 +102,7 @@ const getResult = async (taskId, timeout) => {
         const timeoutId = setTimeout(async () => {
             try {
                 await subscriber.unsubscribe(`result:${taskId}`);
-            } 
+            }
             catch (err) {
                 logger.error('[Redis] Error unsubscribing after timeout:', err);
             }
@@ -126,7 +130,7 @@ const getResult = async (taskId, timeout) => {
 
                     // Resolve the promise with the received result
                     resolve(result);
-                } 
+                }
                 catch (err) {
                     logger.error('[Redis] Error processing message:', err);
                     reject(err);
@@ -148,7 +152,7 @@ const subscribeToResults = async (taskId, callback) => {
     /**
      * @type {Redis.Redis}
      */
-    const subscriber = new Redis(REDIS_URL);
+    const subscriber = createNewConnection();
 
     // Subscribe to the result channel for the specific taskId
     subscriber.subscribe(`result:${taskId}`, (err, count) => {
@@ -178,6 +182,17 @@ const closeSubscriber = async (taskId, subscriber) => {
     await subscriber.unsubscribe(`result:${taskId}`);
     await subscriber.quit();
 };
+
+/**
+ * Create new redis connection
+ * @returns {Redis.Redis}
+ */
+const createNewConnection = () => {
+    return new Redis({
+        host: REDIS_IP.split(':')[0],
+        port: REDIS_IP.split(':')[1]
+    });
+}
 
 module.exports = {
     initRedis: initRedis,
