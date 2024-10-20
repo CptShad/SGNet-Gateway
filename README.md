@@ -2,22 +2,22 @@
 
 ## Table of Contents
 
--   [Stargazer Network: Gateway](#stargazer-network-gateway)
-    -   [Table of Contents](#table-of-contents)
-    -   [Overview](#overview)
-    -   [Features](#features)
-    -   [Architecture](#architecture)
-    -   [How It Works](#how-it-works)
-    -   [Getting Started](#getting-started)
-        -   [Prerequisites](#prerequisites)
-        -   [Installation](#installation)
-        -   [Configuration](#configuration)
-        -   [Running the Gateway](#running-the-gateway)
-    -   [API Endpoints](#api-endpoints)
-    -   [Scaling and Performance](#scaling-and-performance)
-    -   [Future Enhancements](#future-enhancements)
-    -   [Contributing](#contributing)
-    -   [License](#license)
+- [Stargazer Network: Gateway](#stargazer-network-gateway)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Architecture](#architecture)
+  - [How It Works](#how-it-works)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Configuration](#configuration)
+    - [Running the Gateway](#running-the-gateway)
+  - [API Endpoints](#api-endpoints)
+  - [Scaling and Performance](#scaling-and-performance)
+  - [Future Enhancements](#future-enhancements)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Overview
 
@@ -40,28 +40,7 @@ The Stargazer Network Gateway consists of two main components:
 
 Here's a high-level diagram of the system architecture:
 
-<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
-  <rect x="10" y="10" width="780" height="380" fill="#f0f0f0" stroke="#000000" stroke-width="2"/>
-  <rect x="30" y="30" width="200" height="80" fill="#ff9999" stroke="#000000" stroke-width="2"/>
-  <text x="130" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">Gateway (Master)</text>
-  <rect x="300" y="30" width="200" height="80" fill="#99ccff" stroke="#000000" stroke-width="2"/>
-  <text x="400" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">Redis Queue</text>
-  <rect x="570" y="30" width="200" height="80" fill="#99ff99" stroke="#000000" stroke-width="2"/>
-  <text x="670" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">Worker Node 1</text>
-  <rect x="570" y="150" width="200" height="80" fill="#99ff99" stroke="#000000" stroke-width="2"/>
-  <text x="670" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">Worker Node 2</text>
-  <rect x="570" y="270" width="200" height="80" fill="#99ff99" stroke="#000000" stroke-width="2"/>
-  <text x="670" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">Worker Node N</text>
-  <path d="M230 70 H300" fill="none" stroke="#000000" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <path d="M500 70 H570" fill="none" stroke="#000000" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <path d="M500 70 L535 190 H570" fill="none" stroke="#000000" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <path d="M500 70 L535 310 H570" fill="none" stroke="#000000" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" />
-    </marker>
-  </defs>
-</svg>
+![Architecture](https://private-user-images.githubusercontent.com/26326988/378158877-b79ba2d2-d7c8-4577-998a-85af3ff792d5.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjk0MDQyNzksIm5iZiI6MTcyOTQwMzk3OSwicGF0aCI6Ii8yNjMyNjk4OC8zNzgxNTg4NzctYjc5YmEyZDItZDdjOC00NTc3LTk5OGEtODVhZjNmZjc5MmQ1LmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMjAlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDIwVDA1NTkzOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTI0YjUyMzFlOGU3N2U0OGViNWE4ZGQ2Zjg3M2FjYTZmNTU4OWMzOGE4ODkwNDJjZWVlMWNiYjAzMWI5YjRjODQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.kzRFaxiBa0gzrjo7DcB0THeiAFgQ4anyDpvJAQt9Fdk)
 
 ## How It Works
 
@@ -83,7 +62,6 @@ This architecture ensures efficient load distribution and enables horizontal sca
 
 -   [Bun](https://bun.sh/) runtime
 -   [Redis](https://redis.io/) server
--   [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/) (for development)
 
 ### Installation
 
@@ -144,8 +122,7 @@ The Stargazer Network Gateway is designed for horizontal scalability:
 ## Future Enhancements
 
 -   Implement [Exo](https://github.com/exo-explore/exo) to support running large models more efficiently.
--   Add authentication and rate limiting.
--   Implement advanced monitoring and logging.
+-   Implement model based queues and have a way to load balance based on model type. Since not all nodes will have all the models.
 
 ## Contributing
 
