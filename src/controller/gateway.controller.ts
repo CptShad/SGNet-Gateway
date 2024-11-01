@@ -48,15 +48,18 @@ async function generateResponse({ body, set }: { body: GenerateRequestBody; set:
 			}
 			catch (err: any) {
 				logger.error(`Error in generateResponse for taskId ${taskId} stream ${stream || false}: ${err?.message}`);
-				set.status = 500; // Set 500 status for errors
-				return 'Error: Task timed out';
+				return new Response(JSON.stringify({ error: 'Task timed out' }), {
+					headers: { 'Content-Type': 'application/json' },
+				});
 			}
 		}
 	}
 	catch (error: any) {
 		logger.log(`Error in generateResponse for taskId ${taskId} stream ${stream || false}: ${error?.message}`);
 		set.status = 500; // Set 500 status for errors
-		return `Error: ${error.message}`;
+		return new Response(JSON.stringify({ error: error?.message }), {
+			headers: { 'Content-Type': 'application/json' },
+		});
 	}
 }
 
@@ -104,14 +107,18 @@ async function chatResponse({ body, set }: { body: ChatRequestBody; set: any }):
 			catch (err: any) {
 				logger.error(`Error in chatResponse for taskId ${taskId} stream ${stream || false}: ${err?.message}`);
 				set.status = 500; // Set 500 status for errors
-				return 'Error: Task timed out';
+				return new Response(JSON.stringify({ error: 'Task timed out' }), {
+					headers: { 'Content-Type': 'application/json' },
+				});
 			}
 		}
 	}
 	catch (error: any) {
 		logger.log(`Error in chatResponse for taskId ${taskId} stream ${stream || false}: ${error?.message}`);
 		set.status = 500; // Set 500 status for errors
-		return `Error: ${error.message}`;
+		return new Response(JSON.stringify({ error: error?.message }), {
+			headers: { 'Content-Type': 'application/json' },
+		});
 	}
 }
 

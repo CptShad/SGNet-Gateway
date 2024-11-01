@@ -12,10 +12,9 @@ let redisClient: Redis;
  * @returns {Promise<void>}
  */
 async function initRedis(): Promise<void> {
+	redisClient = await createNewConnection(true);
 	return new Promise<void>((resolve, reject) => {
 		try {
-			redisClient = createNewConnection();
-
 			redisClient.on('connect', () => {
 				logger.info('[Redis] Connecting...');
 			});
@@ -88,7 +87,7 @@ async function enqueueTask(task: GenerateRedisTaskData | ChatRedisTaskData): Pro
  * @returns {Object|null} result
  */
 async function getResult(taskId: string, timeout: number): Promise<object | null> {
-	const subscriber = createNewConnection();
+	const subscriber = await createNewConnection();
 
 	return new Promise((resolve, reject) => {
 		const startTime = Date.now();
@@ -114,23 +113,21 @@ async function getResult(taskId: string, timeout: number): Promise<object | null
 
 		// Listen for messages on the channel
 		subscriber.on('message', async (channel, message) => {
-			if (channel === `result:${taskId}`) {
-				try {
-					const result = JSON.parse(message);
+			try {
+				const result = JSON.parse(message);
 
-					// Clear the timeout since we received the message
-					clearTimeout(timeoutId);
+				// Clear the timeout since we received the message
+				clearTimeout(timeoutId);
 
-					await closeSubscriber(taskId, subscriber);
-					logger.info(`Finished processing for task ${taskId} in time ${Date.now() - startTime}`);
+				await closeSubscriber(taskId, subscriber);
+				logger.info(`Finished processing for task ${taskId} in time ${Date.now() - startTime}`);
 
-					// Resolve the promise with the received result
-					resolve(result);
-				}
-				catch (err: any) {
-					logger.error(`[Redis] Error processing message: ${err?.message}`);
-					reject(err);
-				}
+				// Resolve the promise with the received result
+				resolve(result);
+			}
+			catch (err: any) {
+				logger.error(`[Redis] Error processing message: ${err?.message}`);
+				reject(err);
 			}
 		});
 	});
@@ -146,7 +143,7 @@ async function getResult(taskId: string, timeout: number): Promise<object | null
  */
 
 async function subscribeToResults(taskId: string, callback: (message: string) => void): Promise<void> {
-	const subscriber = createNewConnection();
+	const subscriber = await createNewConnection();
 
 	// Subscribe to the result channel for the specific taskId
 	subscriber.subscribe(`result:${taskId}`, (err) => {
@@ -179,14 +176,25 @@ async function closeSubscriber(taskId: string, subscriber: Redis): Promise<void>
 
 /**
  * Create new redis connection
+ * @param raw Whether or not to wait for the client to be ready (return the true conenction).
  * @returns {Promise<Redis>}
+ * @returns 
  */
-function createNewConnection(): Redis {
+async function createNewConnection(raw = false): Promise<Redis> {
 	const [host, port] = REDIS_IP.split(':');
-	return new Redis({
+	const redis = new Redis({
 		host,
 		port: parseInt(port, 10),
 	});
+	if (raw) return redis;
+
+	// Wait for the connection to be established
+	await new Promise((resolve, reject) => {
+		redis.on('connect', resolve);
+		redis.on('error', reject);
+	});
+
+	return redis;
 }
 
 export {
